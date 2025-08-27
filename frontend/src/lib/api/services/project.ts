@@ -1,0 +1,25 @@
+import{ apiClient} from '../apiClient';
+import type { Project } from '../../types/project';
+export const getProjects = async (): Promise<Project[]> => {
+  const response = await apiClient.getProjects();
+  return response;
+};
+
+export const getProjects = async (): Promise<Project[]> => {
+    const { data } = await apiClient.get('/projects');
+    return data;
+  };
+  
+  export const createProject = async (project: Omit<Project, 'id' | 'createdAt'>): Promise<Project> => {
+    const { data } = await apiClient.post('/projects', project);
+    return data;
+  };
+  
+  export const updateProject = async (id: string, project: Partial<Project>): Promise<Project> => {
+    const { data } = await apiClient.patch(`/projects/${id}`, project);
+    return data;
+  };
+  
+  export const deleteProject = async (id: string): Promise<void> => {
+    await apiClient.delete(`/projects/${id}`);
+  };

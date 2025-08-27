@@ -5,6 +5,14 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  // Enable CORS for all origins
+  app.enableCors({
+    origin: '*', // allow all origins
+    credentials: true, // optional: allow credentials
+  });
+
+  app.setGlobalPrefix('api');
+
   const config = new DocumentBuilder()
     .setTitle('My API')
     .setDescription('API documentation')
@@ -15,12 +23,17 @@ async function bootstrap() {
         scheme: 'bearer',
         bearerFormat: 'JWT',
       },
-      'access-token', 
+      'access-token',
     )
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
+  SwaggerModule.setup('api/docs', app, document, {
+    customSiteTitle: 'Tenantly API Documentation',
+    swaggerOptions: {
+      persistAuthorization: true,
+    },
+  });
 
   await app.listen(3001);
 }
