@@ -96,7 +96,7 @@ const RegisterForm: React.FC = () => {
             required
             minLength={6}
           />
-          <Button type="button" size="sm" variant="ghost" className="absolute right-0 top-0 h-full px-3 py-2" onClick={toggleShowPassword}>
+          <Button type="button" size="sm"  className="absolute right-0 top-0 h-full px-3 py-2" onClick={toggleShowPassword}>
             {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
           </Button>
         </div>

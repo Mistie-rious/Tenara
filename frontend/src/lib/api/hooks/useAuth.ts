@@ -1,14 +1,16 @@
-import { useMutation } from "@tanstack/react-query";
-import { login, createTenant } from "../services/auth";
+// src/lib/hooks/useLogout.ts
+import { useAuthStore } from "@/store/authStore";
+import { useUserStore } from "@/store/userStore";
+import { useNavigate } from "react-router-dom";
 
-export const useLogin = () => {
-  return useMutation({
-    mutationFn: login,
-  });
-};
+export const useLogout = () => {
+  const clearAuth = useAuthStore((state) => state.clearAuth);
+  const clearUser = useUserStore((state) => state.clearUser);
+  const navigate = useNavigate();
 
-export const useCreateTenant = () => {
-  return useMutation({
-    mutationFn: createTenant,
-  });
+  return () => {
+    clearAuth();
+    clearUser();
+    navigate("/login");
+  };
 };

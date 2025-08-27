@@ -2,16 +2,25 @@ import { Injectable, ForbiddenException, NotFoundException } from '@nestjs/commo
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateProjectDto } from './dto/create-project-dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
+import { InternalServerErrorException } from '@nestjs/common';
 @Injectable()
 export class ProjectsService {
   constructor(private prisma: PrismaService) {}
 
   async findAll(tenantId: string) {
-    return this.prisma.project.findMany({
-      where: { tenantId, deletedAt: null },
-    });
+    try {
+      const projects = await this.prisma.project.findMany({
+        where: { tenantId, deletedAt: null },
+      });
+      return projects;
+    } catch (error) {
+      // You can log the error for debugging
+      console.error('Error fetching projects:', error);
+      // Throw a controlled HTTP exception
+      throw new InternalServerErrorException('Failed to fetch projects');
+    }
   }
-
+  
   async findOne(projectId: string, tenantId: string) {
     const project = await this.prisma.project.findFirst({
       where: { id: projectId, tenantId, deletedAt: null },

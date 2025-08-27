@@ -1,7 +1,9 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-
+import { GlobalExceptionFilter } from './common/filters/global-exception.filters';
+import { ResponseInterceptor } from './common/interceptor/response.interceptor';
+import { ValidationPipe } from '@nestjs/common';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
@@ -10,6 +12,14 @@ async function bootstrap() {
     origin: '*', // allow all origins
     credentials: true, // optional: allow credentials
   });
+
+  // main.ts
+  app.useGlobalFilters(new GlobalExceptionFilter())
+  app.useGlobalInterceptors(new ResponseInterceptor());
+  app.setGlobalPrefix('api');
+  app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
+
+
 
   app.setGlobalPrefix('api');
 

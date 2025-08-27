@@ -21,6 +21,7 @@ createTenant(@Body() dto: CreateTenantDto) {
 @Post('login')
 @LoginSwagger()
 login(@Body() dto: LoginDto) {
+  console.log(dto)
   return this.service.login(dto);
 }
 

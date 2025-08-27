@@ -1,34 +1,19 @@
 import { apiClient } from "../apiClient";
-export interface CreateUserPayload {
-  name: string;
-  email: string;
-  password: string;
-}
+import type { User, CreateUserPayload } from "../../types/project";
 
-export interface User {
-  id: string;
-  name?: string;
-  username?: string;
-  email: string;
-  role: "ADMIN" | "USER" | string;
-  isActive: boolean;
-  createdAt: string;
-  lastLogin?: string;
-}
 
-export const usersService = {
-  async getUsers(): Promise<User[]> {
+  export const  getUsers = async(): Promise<User[]> => {
     const res = await apiClient.get("/users/findAll");
-    return res.data;
-  },
+    return res.data.data;
+  }
 
-  async createUser(payload: CreateUserPayload): Promise<User> {
+  export const createUser = async(payload: CreateUserPayload): Promise<User> => {
     const res = await apiClient.post("/users/create", payload);
-    return res.data;
-  },
+    return res.data.data;
+  }
 
-  async getProfile(): Promise<User> {
+  export const getProfile = async(): Promise<User> => {
     const res = await apiClient.get("/users/me");
-    return res.data;
-  },
-};
+    return res.data.data;
+  }
+

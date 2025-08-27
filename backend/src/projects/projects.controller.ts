@@ -20,10 +20,18 @@ export class ProjectsController {
   findAll(@GetUser() user: any) {
     return this.projectsService.findAll(user.tenantId);
   }
+  
+  
+
+  @Get(':id')
+
+  findOne(@Param('id') id: string, @GetUser() user: any) {
+    return this.projectsService.findOne(id, user.tenantId);
+  }
 
   @Post()
   @CreateProjectSwagger()
-  create(@GetUser() user: any, dto: CreateProjectDto) {
+  create(@Body() dto: CreateProjectDto, @GetUser() user: any) {
     return this.projectsService.create(dto, user.tenantId, user.id);
   }
 

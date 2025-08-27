@@ -3,7 +3,8 @@ import ProtectedRoute from "../../components/ProtectedRoute";
 import LoginPage from "../auth/login";
 import Register from "../auth/register";
 import DashboardPage from "../dashboard";
-
+import  ProjectsPage  from "../projects";
+import  UsersPage  from "../users";
 export const AppRoutes = () => {
   return (
     <Routes>
@@ -13,10 +14,26 @@ export const AppRoutes = () => {
 
       {/* Protected routes */}
       <Route
-        path="/app/*"
+        path="/dashboard"
         element={
           <ProtectedRoute>
             <DashboardPage />
+          </ProtectedRoute>
+        }
+      />
+       <Route
+        path="/projects"
+        element={
+          <ProtectedRoute>
+            <ProjectsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/users"
+        element={
+          <ProtectedRoute>
+            <UsersPage/>
           </ProtectedRoute>
         }
       />

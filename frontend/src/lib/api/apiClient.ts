@@ -12,7 +12,7 @@ export const apiClient = axios.create({
 
 
 apiClient.interceptors.request.use((config: any) => {
-  const token = sessionStorage.getItem("token");
+  const token = localStorage.getItem("access_token");
   if (token && config.headers) {
     config.headers["Authorization"] = `Bearer ${token}`;
   }

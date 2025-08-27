@@ -12,7 +12,7 @@ import { Loader2 } from 'lucide-react';
 interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (data: { name: string; description: string; status: string }) => void;
+  onSubmit: (payload: UpdateProjectPayload) => void;
 }
 
 export const CreateProjectDialog = ({ open, onOpenChange, onSubmit }: Props) => {
@@ -25,7 +25,7 @@ export const CreateProjectDialog = ({ open, onOpenChange, onSubmit }: Props) => 
     if (!name.trim()) return;
     setLoading(true);
     try {
-      await onSubmit({ name, description, status });
+      await onSubmit({ name, description, status, createdAt:'2020' });
       setName('');
       setDescription('');
       setStatus('ACTIVE');
@@ -58,7 +58,7 @@ export const CreateProjectDialog = ({ open, onOpenChange, onSubmit }: Props) => 
           </Select>
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
+          <Button onClick={() => onOpenChange(false)}>Cancel</Button>
           <Button onClick={handleSubmit} disabled={loading || !name.trim()}>
             {loading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Creating...</> : 'Create Project'}
           </Button>

@@ -5,16 +5,6 @@ export interface LoginData {
   password: string;
 }
 
-interface LoginResponse {
-    access_token: string;
-    user: {
-      id: string;
-      email: string;
-      role: string;
-      [key: string]: any;
-    };
-  }
-
 export interface CreateTenantData {
   name: string;
   username: string;
@@ -24,10 +14,10 @@ export interface CreateTenantData {
 
 export const login = async (data: LoginData) => {
   const res = await apiClient.post("/auth/login", data);
-  return res.data as LoginResponse;
+  return res.data.data;
 };
 
 export const createTenant = async (data: CreateTenantData) => {
   const res = await apiClient.post("/auth/create-tenant", data);
-  return res.data;
+  return res.data.data;
 };

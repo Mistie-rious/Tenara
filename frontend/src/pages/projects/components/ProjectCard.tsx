@@ -35,7 +35,7 @@ export const ProjectCard = ({ project, isAdmin, onEdit, onDelete }: Props) => {
         {isAdmin && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm"><MoreHorizontal className="h-4 w-4" /></Button>
+              <Button  size="sm"><MoreHorizontal className="h-4 w-4" /></Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem onClick={() => onEdit(project)}><Edit className="mr-2 h-4 w-4" /> Edit</DropdownMenuItem>

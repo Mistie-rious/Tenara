@@ -8,13 +8,13 @@ import { Textarea } from '../../../components/ui/textarea';
 import { Label } from '../../../components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../../components/ui/select';
 import { Loader2 } from 'lucide-react';
-import { Project } from '../../../types/project';
-
+import type { Project } from '../../../lib/types/project';
+import type { UpdateProjectPayload } from '..';
 interface Props {
   project: Project;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (data: { name: string; description: string; status: string }) => void;
+  onSubmit: (payload: UpdateProjectPayload) => void;
 }
 
 export const EditProjectDialog = ({ project, open, onOpenChange, onSubmit }: Props) => {
@@ -22,6 +22,7 @@ export const EditProjectDialog = ({ project, open, onOpenChange, onSubmit }: Pro
   const [description, setDescription] = useState(project.description || '');
   const [status, setStatus] = useState(project.status);
   const [loading, setLoading] = useState(false);
+  
 
   useEffect(() => {
     setName(project.name);
@@ -33,7 +34,11 @@ export const EditProjectDialog = ({ project, open, onOpenChange, onSubmit }: Pro
     if (!name.trim()) return;
     setLoading(true);
     try {
-      await onSubmit({ name, description, status });
+    await onSubmit({ 
+  id: project.id, 
+  data: { name, description, status } 
+});
+
       onOpenChange(false);
     } finally {
       setLoading(false);

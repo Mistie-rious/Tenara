@@ -3,12 +3,10 @@ import { Input } from "../../../../components/ui/input";
 import { Label } from "../../../../components/ui/label";
 import { Button } from "../../../../components/ui/button";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
-import { useAuthStore } from "../../../../store/authStore";
-import { useMutation } from "@tanstack/react-query";
-import { login } from "../../../../lib/api/services/auth";
+
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-
+import { useLogin } from "@/lib/api/hooks/useLogin";
 interface LoginFormData {
   email: string;
   password: string;
@@ -19,24 +17,10 @@ const LoginForm: React.FC = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState("");
   
-    const loginUser = useAuthStore((state) => state.loginUser);
+    const loginMutation = useLogin();
     const navigate = useNavigate();
   
-    const mutation = useMutation({
-      mutationFn: async (data: LoginFormData) => {
-        const response = await login(data); 
-        return response;
-      },
-      onSuccess: async (data) => {
-        await loginUser(data);
-        toast.success("Login successful!");
-        navigate("/dashboard");
-      },
-      onError: (err: any) => {
-        setError(err.response?.data?.message || "Something went wrong");
-        toast.error("Please try again");
-      },
-    });
+   
   
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const { id, value } = e.target;
@@ -44,9 +28,22 @@ const LoginForm: React.FC = () => {
     };
   
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        console.log(formData)
       e.preventDefault();
       setError("");
-      mutation.mutate(formData);
+      loginMutation.mutate(
+        formData,
+        {
+          onSuccess: () => {
+            toast.success("Login successful!")
+            navigate("/dashboard");
+          },
+          onError: (err: any) => {
+            // Handle errors
+            alert(err.response?.data?.message || "Login failed");
+          },
+        }
+      );
     };
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -87,8 +84,8 @@ const LoginForm: React.FC = () => {
       </div>
 
       <div className="flex flex-col space-y-2">
-        <Button type="submit" disabled={mutation.isPending}>
-          {mutation.isPending ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Signing In...</> : "Sign In"}
+        <Button type="submit" disabled={loginMutation.isPending}>
+          {loginMutation.isPending ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Signing In...</> : "Sign In"}
         </Button>
         <Button type="button" variant="outline" onClick={() => navigate("/register")}>
           Create New Tenant
