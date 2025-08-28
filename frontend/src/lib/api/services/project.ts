@@ -24,3 +24,19 @@ export const getProjects = async (): Promise<Project[]> => {
   export const getProjectById = async (id: string): Promise<void> => {
     await apiClient.get(`/projects/${id}`);
   };
+
+  export const assignProject = async (projectId: string, userIds: string[]): Promise<void> => {
+    await apiClient.post(`/projects/${projectId}/assign-users`, { userIds });
+  };
+  
+  
+
+  export const unassignProject = async ({
+    id,
+    userId,
+  }: {
+    id: string;
+    userId: string;
+  }): Promise<void> => {
+    await apiClient.delete(`/projects/${id}/unassign-user/${userId}`);
+  };

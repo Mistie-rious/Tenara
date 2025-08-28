@@ -35,6 +35,7 @@ const LoginForm: React.FC = () => {
         formData,
         {
           onSuccess: () => {
+            
             toast.success("Login successful!")
             navigate("/dashboard");
           },
@@ -87,9 +88,14 @@ const LoginForm: React.FC = () => {
         <Button type="submit" disabled={loginMutation.isPending}>
           {loginMutation.isPending ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Signing In...</> : "Sign In"}
         </Button>
-        <Button type="button" variant="outline" onClick={() => navigate("/register")}>
-          Create New Tenant
-        </Button>
+        <div className='flex text-sm justify-center space-x-2' >
+        <span  >
+          Don't have an account 
+        </span>
+        <span className='text-primary' onClick={() => navigate('/register')} >
+        Sign up
+        </span>
+        </div>
       </div>
 
       {error && <p className="text-sm text-red-600">{error}</p>}

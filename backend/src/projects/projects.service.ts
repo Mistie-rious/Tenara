@@ -11,12 +11,21 @@ export class ProjectsService {
     try {
       const projects = await this.prisma.project.findMany({
         where: { tenantId, deletedAt: null },
+        include: {
+          assignedUsers: {   // whatever your relation field is in the Prisma schema
+            select: {
+              id: true,
+              username: true,
+              email: true,
+              role: true,
+            },
+          },
+        },
       });
+  
       return projects;
     } catch (error) {
-      // You can log the error for debugging
       console.error('Error fetching projects:', error);
-      // Throw a controlled HTTP exception
       throw new InternalServerErrorException('Failed to fetch projects');
     }
   }
@@ -50,6 +59,53 @@ export class ProjectsService {
       },
     });
   }
+
+ 
+  async assignUserToProject(projectId: string, userIds: string[], tenantId: string) {
+    try {
+      return await this.prisma.project.update({
+        where: { id: projectId, tenantId },
+        data: {
+          assignedUsers: {
+            connect: userIds.map((id) => ({ id })),
+          },
+        },
+        include: { assignedUsers: true },
+      });
+    } catch (error) {
+      console.error("❌ Error assigning user to project", {
+        projectId,
+        userIds,
+        tenantId,
+        error,
+      });
+      throw error; // rethrow so higher layers (service/controller) can handle it
+    }
+  }
+  
+  async unassignUserFromProject(projectId: string, userId: string, tenantId: string) {
+    try {
+      return await this.prisma.project.update({
+        where: { id: projectId, tenantId },
+        data: {
+          assignedUsers: {
+            disconnect: { id: userId },
+          },
+        },
+        include: { assignedUsers: true },
+      });
+    } catch (error) {
+      console.error("❌ Error unassigning user from project", {
+        projectId,
+        userId,
+        tenantId,
+        error,
+      });
+      throw error;
+    }
+  }
+  
+
   
 
   async delete(projectId: string, tenantId: string, userRole: string) {

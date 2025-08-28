@@ -58,14 +58,17 @@ export const EditProjectDialog = ({ project, open, onOpenChange, onSubmit }: Pro
           <Label>Description</Label>
           <Textarea value={description} onChange={(e) => setDescription(e.target.value)} />
           <Label>Status</Label>
+          
           <Select value={status} onValueChange={(val) => setStatus(val)}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectTrigger className="border-muted focus:ring-accent bg-white text-muted-foreground"><SelectValue /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="ACTIVE">Active</SelectItem>
+              <SelectItem value="INACTIVE">Inactive</SelectItem>
+              <SelectItem value="ONGOING">Ongoing</SelectItem>
               <SelectItem value="COMPLETED">Completed</SelectItem>
               <SelectItem value="ARCHIVED">Archived</SelectItem>
             </SelectContent>
           </Select>
+      
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>

@@ -1,5 +1,5 @@
 
-import { Controller, Get, Post, Body, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Req, UseGuards, Param, Delete } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
@@ -33,5 +33,26 @@ getProfile(@GetUser() user: any) {
   @CreateUserSwagger()
   create(@Body() dto: CreateUserDto, @Req() req) {
     return this.usersService.create(dto, req.user.tenantId, req.user.role);
+  }
+
+  @Post(':id/assign-project')
+  @Roles(Role.ADMIN)
+  assignProjectToUser(
+    @Param('id') userId: string,
+    @Body('projectId') projectId: string,
+    @GetUser() user: any,
+  ) {
+    return this.usersService.assignProjectToUser(userId, projectId, user.tenantId);
+  }
+
+ 
+  @Delete(':id/unassign-project/:projectId')
+  @Roles(Role.ADMIN)
+  unassignProjectFromUser(
+    @Param('id') userId: string,
+    @Param('projectId') projectId: string,
+    @GetUser() user: any,
+  ) {
+    return this.usersService.unassignProjectFromUser(userId, projectId, user.tenantId);
   }
 }

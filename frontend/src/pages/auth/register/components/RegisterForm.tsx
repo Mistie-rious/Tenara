@@ -118,9 +118,14 @@ const RegisterForm: React.FC = () => {
         <Button type="submit" disabled={mutation.isPending}>
           {mutation.isPending ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Creating...</> : 'Create Tenant'}
         </Button>
-        <Button type="button" onClick={() => navigate('/login')} className="text-sm">
-          Already have an account? Log in
-        </Button>
+        <div className='flex text-sm justify-center space-x-2' >
+        <span  >
+          Already have an account? 
+        </span>
+        <span className='text-primary' onClick={() => navigate('/login')} >
+        Log in
+        </span>
+        </div>
       </div>
 
       {error && <p className="text-sm text-red-600">{error}</p>}

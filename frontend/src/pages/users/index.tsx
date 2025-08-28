@@ -10,6 +10,9 @@ import { useMutation } from '@tanstack/react-query';
 import { useUserStore } from '@/store/userStore';
 import { createUser } from '@/lib/api/services/users';
 import { queryClient } from '@/lib/react-query';
+import { ArrowLeft } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+
 
 const UsersPage = () => {
   const [createUserOpen, setCreateUserOpen] = useState(false);
@@ -17,32 +20,45 @@ const UsersPage = () => {
 
   const {user} = useUserStore();
   const {data : usersData = [], isLoading: usersLoading, error: usersError} = useQuery({queryKey: ['users'], queryFn: getUsers})
+  const navigate = useNavigate();
 
   const createMutation = useMutation({mutationFn: createUser, 
     onSuccess: () => {
       console.log('sucess!')
-      queryClient.invalidateQueries({queryKey: ['projects']})
+      queryClient.invalidateQueries({queryKey: ['users']})
   }})
 
   const isAdmin = user?.role === 'ADMIN';
 
-  const handleCreateUser = async (data: { name: string; email: string; password: string  }) => {
+  const handleCreateUser = async (data: { username: string; email: string; password: string  }) => {
     setCreating(true);
     createMutation.mutate(data)
     setCreating(false);
     setCreateUserOpen(false);
     return Promise.resolve();
   };
+
+  
   return (
-    <div className="min-h-screen w-screen bg-gray-50 dark:bg-gray-900">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+    <div className="min-h-screen min-w-screen bg-gray-50 dark:bg-gray-900">
+      <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
         {/* Header */}
         <div className="mb-6 sm:mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-gray-100">
-                Team Members
-              </h1>
+            <div className='flex space-x-2' >
+          <div
+
+  onClick={() => navigate('/dashboard')}
+  className="flex items-center w-fit text-sm text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white"
+>
+  <ArrowLeft className="w-4 h-4 mr-1" />
+</div>
+<div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-gray-100">
+Team Members
+              </div>
+              </div>
+             
               <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mt-1">
                 Manage your tenant's users and access
               </p>

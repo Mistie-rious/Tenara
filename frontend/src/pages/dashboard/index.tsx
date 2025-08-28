@@ -25,23 +25,8 @@ import { getProjects } from '@/lib/api/services/project';
 import { getUsers } from '@/lib/api/services/users';
 import { useUserStore } from '@/store/userStore';
 // Mock data and interfaces
-interface Project {
-  id: string;
-  name: string;
-  status: 'ACTIVE' | 'COMPLETED' | 'ARCHIVED' | string;
-  createdAt: string;
-  progress?: number;
-  dueDate?: string;
-}
 
-interface User {
-  id: string;
-  username: string;
-  role: 'ADMIN' | 'USER' | string;
-  isActive: boolean;
-  lastLogin?: string;
-  avatar?: string;
-}
+
 
 const DashboardPage = () => {
   // Mock current user
@@ -60,7 +45,8 @@ const DashboardPage = () => {
   const {user} = useUserStore()
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'ACTIVE': return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
+      case 'INACTIVE': return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+      case 'ONGOING': return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
       case 'COMPLETED': return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
       case 'ARCHIVED': return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
       default: return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
@@ -69,7 +55,7 @@ const DashboardPage = () => {
 
   const stats = {
     totalProjects: projectsData?.length || 0,
-    activeProjects: projectsData?.filter(p => p.status === 'ACTIVE').length || 0,
+    activeProjects: projectsData?.filter(p => p.status === 'ONGOING').length || 0,
     completedProjects: projectsData?.filter(p => p.status === 'COMPLETED').length || 0,
     totalUsers: usersData?.length || 0,
     activeUsers: usersData?.filter(u => u.isActive).length || 0,
@@ -88,9 +74,9 @@ const DashboardPage = () => {
   };
 
   return (
-    <div className="min-h-screen w-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen min-w-screen bg-gray-50 dark:bg-gray-900">
       {/* Main Content */}
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* Welcome Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between">
@@ -189,7 +175,7 @@ const DashboardPage = () => {
               <Users className="h-4 w-4 text-purple-600" />
             </CardHeader>
             <CardContent className="pb-3">
-              <div className="text-xl font-bold text-gray-900 dark:text-gray-100">{stats.activeUsers}</div>
+              <div className="text-xl font-bold text-gray-900 dark:text-gray-100">{stats.totalUsers}</div>
               <p className="text-xs text-gray-500 dark:text-gray-400">
                 {stats.totalUsers} total members
               </p>

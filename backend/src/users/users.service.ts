@@ -63,6 +63,31 @@ export class UsersService {
     };
   }
 
+async assignProjectToUser(userId: string, projectId: string, tenantId: string) {
+  return this.prisma.user.update({
+    where: { id: userId, tenantId },
+    data: {
+      assignedProjects: {
+        connect: { id: projectId },
+      },
+    },
+    include: { assignedProjects: true },
+  });
+}
+
+async unassignProjectFromUser(userId: string, projectId: string, tenantId: string) {
+  return this.prisma.user.update({
+    where: { id: userId, tenantId },
+    data: {
+      assignedProjects: {
+        disconnect: { id: projectId },
+      },
+    },
+    include: { assignedProjects: true },
+  });
+}
+
+
 
   async create(dto: CreateUserDto, tenantId: string, currentUserRole: string) {
     if (currentUserRole !== 'ADMIN') {

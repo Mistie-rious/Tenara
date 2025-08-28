@@ -1,87 +1,138 @@
 import { useState } from 'react';
 import { Button } from '../../components/ui/button';
-import { FolderOpen, Plus } from 'lucide-react';
+import { FolderOpen, Loader2, Plus } from 'lucide-react';
 import { CreateProjectDialog } from './components/CreateProjectDialog';
 import { EditProjectDialog } from './components/EditProjectDialog';
+import { AssignMembersDialog } from './components/AssignMembersDialog';
 import { ProjectCard } from './components/ProjectCard';
 import type { Project } from '../../lib/types/project';
 import { deleteProject, getProjects, updateProject } from '@/lib/api/services/project';
-import { getUsers } from '@/lib/api/services/users';
 import { useUserStore } from '@/store/userStore';
 import { useQuery } from '@tanstack/react-query';
 import { useMutation } from '@tanstack/react-query';
-import { useQueryClient } from '@tanstack/react-query';
+import { queryClient } from '@/lib/react-query';
 import { createProject } from '@/lib/api/services/project';
-import { getProjectById } from '@/lib/api/services/project';
-
+import { ArrowLeft } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { assignProject as assignProjectAPI } from '@/lib/api/services/project';
+import { unassignProject as unassignProjectAPI } from '@/lib/api/services/project';
+import { getUsers } from '@/lib/api/services/users';
 export type UpdateProjectPayload = {
   id: string;
   data: Partial<Project>;
 };
 
 const ProjectsPage = () => {
-  // Demo user (admin)
- 
-
-  // Demo project data
-  
   const [createOpen, setCreateOpen] = useState(false);
   const [editProject, setEditProject] = useState<Project | null>(null);
-  const {data : projectsData = [], isLoading: projectsLoading, error: projectsError} = useQuery({queryKey: ['projects'], queryFn: getProjects})
+  const [assignProjectState, setAssignProjectState] = useState<Project | null>(null);
 
- 
-  const {user} = useUserStore()
+  const { data: projectsData = [], isLoading: projectsLoading, error: projectsError } = useQuery({
+    queryKey: ['projects'], 
+    queryFn: getProjects
+  });
+
+
+  console.log(projectsData)
+  const { data: usersData = [], isLoading: usersLoading } = useQuery({
+    queryKey: ['users'], 
+    queryFn: getUsers
+  });
+
+  const { user } = useUserStore();
   const isAdmin = user?.role === 'ADMIN';
+  const navigate = useNavigate();
 
-  const queryClient = useQueryClient();
-
-  const createMutation = useMutation({mutationFn: createProject, 
+  const createMutation = useMutation({
+    mutationFn: createProject, 
     onSuccess: () => {
-      console.log('sucess!')
-      queryClient.invalidateQueries({queryKey: ['projects']})
-  }})
+      console.log('success!');
+      queryClient.invalidateQueries({ queryKey: ['projects'] });
+    }
+  });
 
+  const assignMutation = useMutation({
+    mutationFn: ({ projectId, userIds }: { projectId: string; userIds: string[] }) =>
+      assignProjectAPI(projectId, userIds),
+    onSuccess: () => {
+      console.log('✅ assign success!');
+      queryClient.invalidateQueries({ queryKey: ['projects'] });
+    },
+  });
+  
+  
 
-
+  const unassignMutation = useMutation({
+    mutationFn: ({ projectId, userId }: { projectId: string; userId: string }) => 
+      unassignProjectAPI({ id: projectId, userId }),
+    onSuccess: () => {
+      console.log("unassign success!");
+      queryClient.invalidateQueries({ queryKey: ["projects"] });
+    },
+  });
 
   const updateMutation = useMutation({
     mutationFn: async ({ id, data }: UpdateProjectPayload) => {
       return updateProject(id, data);
     },
     onSuccess: () => {
-      console.log('success!');
+      console.log('update success!');
       queryClient.invalidateQueries({ queryKey: ['projects'] });
     },
   });
-  const deleteMutation = useMutation({mutationFn: deleteProject, 
+
+  const deleteMutation = useMutation({
+    mutationFn: deleteProject, 
     onSuccess: () => {
-      console.log('sucess!')
-      queryClient.invalidateQueries({queryKey: ['projects']})
-  }})
- 
+      console.log('delete success!');
+      queryClient.invalidateQueries({ queryKey: ['projects'] });
+    }
+  });
+
   const handleCreate = (data: any) => {
-   createMutation.mutate(data)
-  
+    createMutation.mutate(data);
   };
 
   const handleUpdate = (payload: UpdateProjectPayload) => {
-   updateMutation.mutate( payload)
+    updateMutation.mutate(payload);
   };
 
   const handleDelete = (id: string) => {
-    deleteMutation.mutate(id)
+    deleteMutation.mutate(id);
+  };
+
+  const handleAssignClick = (project: Project) => {
+    setAssignProjectState(project);
+  };
+
+  const handleAssignSubmit = (projectId: string, userIds: string[]) => {
+    assignMutation.mutate({ projectId, userIds });
+  };
+  
+  const handleUnassign = (projectId: string, userId: string) => {
+    unassignMutation.mutate({ projectId, userId });
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+    <div className="min-h-screen min-w-screen bg-gray-50 dark:bg-gray-900">
+      <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        
         {/* Header */}
         <div className="mb-6 sm:mb-8">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-gray-100">
-                Projects
-              </h1>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-6">
+            
+            <div className="min-w-0">
+              <div className='flex space-x-2'>
+                <div
+                  onClick={() => navigate('/dashboard')}
+                  className="flex items-center w-fit text-sm text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white cursor-pointer"
+                >
+                  <ArrowLeft className="w-4 h-4 mr-1" />
+                </div>
+                <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-gray-100">
+                  Projects
+                </div>
+              </div>
               <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mt-1">
                 Manage your tenant's projects
               </p>
@@ -89,7 +140,7 @@ const ProjectsPage = () => {
             {isAdmin && (
               <Button 
                 onClick={() => setCreateOpen(true)}
-                className="w-full sm:w-auto"
+                className="w-full sm:w-auto flex-shrink-0"
                 size="default"
               >
                 <Plus className="mr-2 h-4 w-4" /> 
@@ -98,39 +149,41 @@ const ProjectsPage = () => {
             )}
           </div>
         </div>
-
+  
         {/* Projects Grid */}
-        {projectsData.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
-            {projectsData?.map((project) => (
+        {projectsLoading ? (
+          <div className="flex justify-center items-center py-12 sm:py-16 lg:py-20">
+            <Loader2 className="h-6 w-6 animate-spin text-gray-500 dark:text-gray-400" />
+            <span className="ml-2 text-gray-600 dark:text-gray-300">Loading projects...</span>
+          </div>
+        ) : projectsData.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+            {projectsData.map((project) => (
               <ProjectCard
                 key={project.id}
                 project={project}
                 isAdmin={isAdmin}
                 onEdit={setEditProject}
                 onDelete={handleDelete}
+                onAssign={handleAssignClick}
+                onUnassign={handleUnassign}
               />
             ))}
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center py-12 sm:py-16 lg:py-20">
-            <div className="text-center max-w-md mx-auto px-4">
-              <FolderOpen className="mx-auto h-12 w-12 sm:h-16 sm:w-16 text-gray-400 dark:text-gray-600 mb-4" />
-              <h3 className="text-lg sm:text-xl font-medium text-gray-900 dark:text-gray-100 mb-2">
-                No projects yet
-              </h3>
-              <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mb-6">
-                Get started by creating your first project
-              </p>
-              {isAdmin && (
-                <Button 
-                  onClick={() => setCreateOpen(true)}
-                  size="default"
-                >
-                  <Plus className="mr-2 h-4 w-4" /> Create Project
-                </Button>
-              )}
-            </div>
+          <div className="flex flex-col items-center justify-center py-12 sm:py-16 lg:py-20 px-4 text-center">
+            <FolderOpen className="h-12 w-12 sm:h-16 sm:w-16 text-gray-400 dark:text-gray-600 mb-4" />
+            <h3 className="text-lg sm:text-xl font-medium text-gray-900 dark:text-gray-100 mb-2">
+              No projects yet
+            </h3>
+            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mb-6">
+              Get started by creating your first project
+            </p>
+            {isAdmin && (
+              <Button onClick={() => setCreateOpen(true)} size="default">
+                <Plus className="mr-2 h-4 w-4" /> Create Project
+              </Button>
+            )}
           </div>
         )}
 
@@ -140,12 +193,24 @@ const ProjectsPage = () => {
           onOpenChange={setCreateOpen} 
           onSubmit={handleCreate} 
         />
+        
         {editProject && (
           <EditProjectDialog
             project={editProject}
             open={!!editProject}
             onOpenChange={() => setEditProject(null)}
             onSubmit={handleUpdate}
+          />
+        )}
+
+        {assignProjectState && (
+          <AssignMembersDialog
+            open={!!assignProjectState}
+            onOpenChange={() => setAssignProjectState(null)}
+            project={assignProjectState}
+            users={usersData}
+            onSubmit={handleAssignSubmit}
+            loading={assignMutation.isPending}
           />
         )}
       </div>

@@ -5,7 +5,7 @@ import RegisterForm from './components/RegisterForm';
 const RegisterPage: React.FC = () => {
   return (
     <AuthLayout
-      title="Create Your Tenant"
+      title="Create Your organization"
       subtitle="Set up your organization and admin account"
     >
       <RegisterForm />

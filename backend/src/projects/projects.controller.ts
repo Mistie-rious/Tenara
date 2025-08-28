@@ -51,4 +51,26 @@ update(
   delete(@Param('id') id: string, @GetUser() user: any) {
     return this.projectsService.delete(id, user.tenantId, user.role);
   }
+
+
+  @Post(':id/assign-users')
+  @Roles(Role.ADMIN)
+  assignUsersToProject(
+    @Param('id') projectId: string,
+    @Body('userIds') userIds: string[],
+    @GetUser() user: any,
+  ) {
+    return this.projectsService.assignUserToProject(projectId, userIds, user.tenantId);
+  }
+  
+   
+    @Delete(':id/unassign-user/:userId')
+    @Roles(Role.ADMIN)
+    unassignUserFromProject(
+      @Param('id') projectId: string,
+      @Param('userId') userId: string,
+      @GetUser() user: any,
+    ) {
+      return this.projectsService.unassignUserFromProject(projectId, userId, user.tenantId);
+    }
 }
