@@ -4,58 +4,31 @@ import UserProfileCard from './components/ProfileCard';
 import CreateUserDialog from './components/CreateUserDialog';
 import { Plus, Users, Shield } from 'lucide-react';
 import type { User } from '../../lib/types/project';
+import { getUsers } from '@/lib/api/services/users';
+import { useQuery } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
+import { useUserStore } from '@/store/userStore';
+import { createUser } from '@/lib/api/services/users';
+import { queryClient } from '@/lib/react-query';
 
 const UsersPage = () => {
   const [createUserOpen, setCreateUserOpen] = useState(false);
   const [creating, setCreating] = useState(false);
 
-  // Demo logged-in user
-  const currentUser = { id: '0', name: 'Admin Demo', role: 'ADMIN' };
-  const isAdmin = currentUser.role === 'ADMIN';
+  const {user} = useUserStore();
+  const {data : usersData = [], isLoading: usersLoading, error: usersError} = useQuery({queryKey: ['users'], queryFn: getUsers})
 
-  // Dummy users
-  const [users, setUsers] = useState<User[]>([
-    {
-      id: '1',
-      name: 'Alice Johnson',
-      email: 'alice@example.com',
-      role: 'USER',
-      isActive: true,
-      createdAt: new Date().toISOString(),
-      tenant: { id: 't1', name: 'Demo Tenant', slug:'ewtywet6' }, // <-- added
-    },
-    {
-      id: '2',
-      name: 'Bob Smith',
-      email: 'bob@example.com',
-      role: 'ADMIN',
-      isActive: true,
-      createdAt: new Date().toISOString(),
-      tenant: { id: 't1', name: 'Demo Tenant', slug:'etywet6' },
-    },
-    {
-      id: '3',
-      name: 'Charlie Brown',
-      email: 'charlie@example.com',
-      role: 'USER',
-      isActive: false,
-      createdAt: new Date().toISOString(),
-      tenant: { id: 't1', name: 'Demo Tenant', slug:'ewtyweet6' },
-    },
-  ]);
-  
-  const handleCreateUser = async (data: { name: string; email: string; password: string,  }) => {
+  const createMutation = useMutation({mutationFn: createUser, 
+    onSuccess: () => {
+      console.log('sucess!')
+      queryClient.invalidateQueries({queryKey: ['projects']})
+  }})
+
+  const isAdmin = user?.role === 'ADMIN';
+
+  const handleCreateUser = async (data: { name: string; email: string; password: string  }) => {
     setCreating(true);
-    const newUser: User = {
-      id: (users.length + 1).toString(),
-      name: data.name,
-      email: data.email,
-      role: 'USER',
-      isActive: true,
-      createdAt: new Date().toISOString(),
-      tenant: data.id
-    };
-    setUsers((prev) => [...prev, newUser]);
+    createMutation.mutate(data)
     setCreating(false);
     setCreateUserOpen(false);
     return Promise.resolve();
@@ -87,9 +60,9 @@ const UsersPage = () => {
         </div>
   
         {/* Users Grid */}
-        {users.length > 0 ? (
+        {usersData?.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 mb-6">
-            {users.map((user) => (
+            {usersData?.map((user) => (
               <UserProfileCard key={user.id} user={user} />
             ))}
           </div>

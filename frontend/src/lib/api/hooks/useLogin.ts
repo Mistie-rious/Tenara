@@ -14,11 +14,12 @@ const {token} = useAuthStore()
 
       if (res.access_token) {
         setToken(res.access_token);
-        console.log(token)
+       
 
         // Remove sensitive fields like password
         const { password, ...safeUser } = res.user;
         setUser(safeUser);
+        console.log(safeUser)
       }
 
       console.log(res)

@@ -7,9 +7,19 @@ import { Badge } from "../../../components/ui/badge";
 import { Mail } from "lucide-react";
 import { Calendar } from "lucide-react";
 import { Activity } from "lucide-react";
+import type { User } from "../../../lib/types/project";
+
+const parseDate = (dateStr?: string) => {
+  if (!dateStr) return null;
+  const trimmed = dateStr.trim();
+  const date = new Date(trimmed);
+  return isNaN(date.getTime()) ? null : date;
+};
 
 
 const UserProfileCard = ({ user }: { user: User }) => (
+
+  
     <Card className="hover:shadow-md transition-shadow">
       <CardHeader className="pb-3 flex items-start space-x-3">
         <Avatar className="w-12 h-12">
@@ -22,9 +32,7 @@ const UserProfileCard = ({ user }: { user: User }) => (
               {user.role === 'ADMIN' && <Shield className="mr-1 h-3 w-3" />}
               {user.role}
             </Badge>
-            <Badge variant={user.isActive ? 'outline' : 'destructive'} className="text-xs">
-              {user.isActive ? 'Active' : 'Inactive'}
-            </Badge>
+           
           </div>
         </div>
       </CardHeader>

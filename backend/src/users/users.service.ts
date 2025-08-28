@@ -15,6 +15,9 @@ export class UsersService {
         email: true,
         username: true,
         role: true,
+        lastLogin: true,
+        tenant: true,
+      createdAt: true
       },
     });
   }
@@ -27,6 +30,9 @@ export class UsersService {
         email: true,
         username: true,
         role: true,
+        lastLogin: true,
+        tenant: true,
+      createdAt: true
       },
     });
   }
@@ -53,6 +59,7 @@ export class UsersService {
         name: user.tenant.name,
         slug: user.tenant.slug,
       },
+      createdAt: user.createdAt
     };
   }
 
