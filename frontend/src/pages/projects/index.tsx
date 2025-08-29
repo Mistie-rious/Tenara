@@ -22,18 +22,20 @@ const ProjectsPage = () => {
   const [editProject, setEditProject] = useState<Project | null>(null);
   const [assignProjectState, setAssignProjectState] = useState<Project | null>(null);
 
+    const { user } = useUserStore();
+
   const { data: projectsData = [], isLoading: projectsLoading,  } = useQuery({
-    queryKey: ['projects'], 
+    queryKey: ['projects', user?.tenant.id], 
     queryFn: getProjects
   });
 
 
   const { data: usersData = [],  } = useQuery({
-    queryKey: ['users'], 
+    queryKey: ['users', user?.tenant.id], 
     queryFn: getUsers
   });
 
-  const { user } = useUserStore();
+
   const isAdmin = user?.role === 'ADMIN';
   const navigate = useNavigate();
   const { 

@@ -5,6 +5,10 @@
 It allows organizations to register, manage users, create and manage projects, and track activity across multiple tenants.
 The architecture follows modular principles, separating frontend pages, shared/UI components, state management, and backend features.
 
+Tenara implements shared-schema multi-tenancy: all tenants share the same database schema, but each row of data includes a tenantId field. This ensures data isolation between organizations while keeping the database structure simple and scalable.
+
+Tenant data is isolated by including tenantId in all relevant models (User, Project). All queries filter based on the current tenant's ID, and each mutation automatically associates new data with the correct tenant.
+
 ---
 
 ## Tech Stack

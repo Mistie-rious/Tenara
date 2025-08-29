@@ -8,6 +8,7 @@ import { CreateProjectSwagger, FindAllProjectsSwagger, DeleteProjectSwagger } fr
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { GetUser } from 'src/common/decorators/get-user.decorator';
+import { Tenant } from 'src/common/decorators/get-tenant.decorator';
 @ApiTags('projects')
 @ApiBearerAuth('access-token') 
 @UseGuards(JwtAuthGuard)
@@ -17,22 +18,22 @@ export class ProjectsController {
 
   @Get()
   @FindAllProjectsSwagger()
-  findAll(@GetUser() user: any) {
-    return this.projectsService.findAll(user.tenantId);
+  findAll(@Tenant() tenantId: string ) {
+    return this.projectsService.findAll(tenantId);
   }
   
   
 
   @Get(':id')
 
-  findOne(@Param('id') id: string, @GetUser() user: any) {
-    return this.projectsService.findOne(id, user.tenantId);
+  findOne(@Param('id') id: string, @Tenant() tenantId: string) {
+    return this.projectsService.findOne(id, tenantId);
   }
 
   @Post()
   @CreateProjectSwagger()
-  create(@Body() dto: CreateProjectDto, @GetUser() user: any) {
-    return this.projectsService.create(dto, user.tenantId, user.id);
+  create(@Body() dto: CreateProjectDto, @GetUser() user: any, @Tenant() tenantId: string) {
+    return this.projectsService.create(dto, tenantId, user.id);
   }
 
   @Patch(':id')
@@ -40,16 +41,17 @@ export class ProjectsController {
 update(
   @Param('id') id: string,
   @Body() dto: UpdateProjectDto,
-  @GetUser() user: any
+  @GetUser() user: any,
+  @Tenant() tenantId: string
 ) {
-  return this.projectsService.update(id, user.tenantId, user.id, dto);
+  return this.projectsService.update(id, tenantId, user.id, dto);
 }
 
   @Delete(':id')
   @Roles(Role.ADMIN)
   @DeleteProjectSwagger()
-  delete(@Param('id') id: string, @GetUser() user: any) {
-    return this.projectsService.delete(id, user.tenantId, user.role);
+  delete(@Param('id') id: string, @GetUser() user: any, @Tenant() tenantId: string) {
+    return this.projectsService.delete(id, tenantId, user.role);
   }
 
 
@@ -59,8 +61,9 @@ update(
     @Param('id') projectId: string,
     @Body('userIds') userIds: string[],
     @GetUser() user: any,
+    @Tenant() tenantId: string
   ) {
-    return this.projectsService.assignUserToProject(projectId, userIds, user.tenantId);
+    return this.projectsService.assignUserToProject(projectId, userIds, tenantId);
   }
   
    
@@ -70,7 +73,8 @@ update(
       @Param('id') projectId: string,
       @Param('userId') userId: string,
       @GetUser() user: any,
+      @Tenant() tenantId: string
     ) {
-      return this.projectsService.unassignUserFromProject(projectId, userId, user.tenantId);
+      return this.projectsService.unassignUserFromProject(projectId, userId, tenantId);
     }
 }

@@ -19,14 +19,15 @@ import { LogoutButton } from './components/Logout';
 import { UserCard } from './components/UserCard';
 import { Badge } from '@/components/ui/badge';
 import { Shield } from 'lucide-react';
+import { useAuthStore } from '@/store/authStore';
 const DashboardPage = () => {
   
-
+  const {user} = useUserStore()
  
 
-  const {data : projectsData = [], isLoading: projectsLoading} = useQuery({queryKey: ['projects'], queryFn: getProjects})
-  const {data : usersData = [], isLoading: usersLoading, } = useQuery({queryKey: ['users'], queryFn: getUsers})
-  const {user} = useUserStore()
+  const {data : projectsData = [], isLoading: projectsLoading} = useQuery({ queryKey: ['projects', user?.tenant.id], queryFn: getProjects})
+  const {data : usersData = [], isLoading: usersLoading, } = useQuery({queryKey: ['users', user?.tenant.id], queryFn: getUsers})
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'INACTIVE': return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'

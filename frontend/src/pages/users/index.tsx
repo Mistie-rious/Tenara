@@ -15,23 +15,33 @@ const UsersPage = () => {
   const [creating, setCreating] = useState(false);
 
   const {user} = useUserStore();
-  const {data : usersData = []} = useQuery({queryKey: ['users'], queryFn: getUsers})
+  const {data : usersData = []} = useQuery({queryKey: ['users', user?.tenant.id, ], queryFn: getUsers})
   const navigate = useNavigate();
-  const { createMutation } = useUserMutations();
+  const { createMutation } = useUserMutations(
+  );
  
 
 
 
-  const isAdmin = user?.role === 'ADMIN';
 
-  const handleCreateUser = async (data: { username: string; email: string; password: string  }) => {
+  const handleCreateUser = async (data: { username: string; email: string; password: string }) => {
     setCreating(true);
-    createMutation.mutate(data)
-    setCreating(false);
-    setCreateUserOpen(false);
-    return Promise.resolve();
+    
+    createMutation.mutate(data, {
+      onSuccess: () => {
+       
+        setCreateUserOpen(false);
+        setCreating(false);
+      },
+      onError: (error) => {
+       
+        setCreating(false);
+        console.error('Failed to create user:', error);
+      }
+    });
   };
 
+  const isAdmin = user?.role === 'ADMIN';
   
   return (
     <div className="min-h-screen min-w-screen bg-gray-50 dark:bg-gray-900">

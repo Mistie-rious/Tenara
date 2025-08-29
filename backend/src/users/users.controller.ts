@@ -8,6 +8,7 @@ import { Role } from '@prisma/client';
 import { CreateUserSwagger, FindAllUsersSwagger } from 'src/lib/docs/users-decorator';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { GetUser } from 'src/common/decorators/get-user.decorator';
+import { Tenant } from 'src/common/decorators/get-tenant.decorator';
 @ApiTags('users')
 @ApiBearerAuth('access-token') 
 @UseGuards(JwtAuthGuard)
@@ -17,8 +18,8 @@ export class UsersController {
 
   @Get('findAll')
   @FindAllUsersSwagger()
-  findAll(@GetUser() user: any) {
-    return this.usersService.findAll(user.tenantId);
+  findAll(@Tenant() tenantId: string) {
+    return this.usersService.findAll(tenantId);
   }
 
   @Get('me')
@@ -31,8 +32,8 @@ getProfile(@GetUser() user: any) {
   @Post('create')
   @Roles(Role.ADMIN)
   @CreateUserSwagger()
-  create(@Body() dto: CreateUserDto, @Req() req) {
-    return this.usersService.create(dto, req.user.tenantId, req.user.role);
+  create(@Body() dto: CreateUserDto, @GetUser() user:any, @Tenant() tenantId: string) {
+    return this.usersService.create(dto, tenantId, user.role);
   }
 
   @Post(':id/assign-project')
@@ -41,8 +42,9 @@ getProfile(@GetUser() user: any) {
     @Param('id') userId: string,
     @Body('projectId') projectId: string,
     @GetUser() user: any,
+    @Tenant() tenantId: string
   ) {
-    return this.usersService.assignProjectToUser(userId, projectId, user.tenantId);
+    return this.usersService.assignProjectToUser(userId, projectId, tenantId);
   }
 
  
@@ -52,7 +54,8 @@ getProfile(@GetUser() user: any) {
     @Param('id') userId: string,
     @Param('projectId') projectId: string,
     @GetUser() user: any,
+    @Tenant() tenantId: string
   ) {
-    return this.usersService.unassignProjectFromUser(userId, projectId, user.tenantId);
+    return this.usersService.unassignProjectFromUser(userId, projectId, tenantId);
   }
 }

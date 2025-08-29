@@ -5,6 +5,7 @@ import { useUserStore } from "@/store/userStore";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 
+import { queryClient } from "@/lib/queryClient";
 export const useAuth = () => {
   const setToken = useAuthStore((state) => state.setToken);
   const clearAuth = useAuthStore((state) => state.clearAuth);
@@ -24,6 +25,8 @@ export const useAuth = () => {
       return res;
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['projects'] });
+      queryClient.invalidateQueries({ queryKey: ['users'] });
       toast.success("Login successful!");
       navigate("/dashboard");
     },
@@ -32,7 +35,7 @@ export const useAuth = () => {
     },
   });
 
-  // Register / create tenant mutation
+
   const registerMutation = useMutation({
     mutationFn: async (data: { name: string; username: string; email: string; password: string }) => {
       return createTenant(data);
@@ -50,7 +53,9 @@ export const useAuth = () => {
   const logout = () => {
     clearAuth();
     clearUser();
-    toast("Logged out successfully");
+    queryClient.clear()
+   
+    toast.success("Logged out successfully");
     navigate("/login");
   };
 

@@ -9,6 +9,7 @@ export type UpdateProjectPayload = {
   data: Partial<Project>;
 };
 
+
 export const useProjectMutations = () => {
   
   const createMutation = useMutation({

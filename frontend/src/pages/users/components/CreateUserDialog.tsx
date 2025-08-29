@@ -20,7 +20,7 @@ const CreateUserDialog = ({ open, onOpenChange, onSubmit, loading = false }: Cre
     try {
       await onSubmit(formData);
       setFormData({ username: '', email: '', password: '' });
-      onOpenChange(false);
+      
     } catch (err) {
       console.error(err);
     }
