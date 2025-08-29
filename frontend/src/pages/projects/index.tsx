@@ -5,36 +5,30 @@ import { CreateProjectDialog } from './components/CreateProjectDialog';
 import { EditProjectDialog } from './components/EditProjectDialog';
 import { AssignMembersDialog } from './components/AssignMembersDialog';
 import { ProjectCard } from './components/ProjectCard';
-import type { Project } from '../../lib/types/project';
-import { deleteProject, getProjects, updateProject } from '@/lib/api/services/project';
+import type { Project } from '../../lib/types';
+import {  getProjects } from '@/lib/api/services/project';
 import { useUserStore } from '@/store/userStore';
 import { useQuery } from '@tanstack/react-query';
-import { useMutation } from '@tanstack/react-query';
-import { queryClient } from '@/lib/react-query';
-import { createProject } from '@/lib/api/services/project';
 import { ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { assignProject as assignProjectAPI } from '@/lib/api/services/project';
-import { unassignProject as unassignProjectAPI } from '@/lib/api/services/project';
 import { getUsers } from '@/lib/api/services/users';
 export type UpdateProjectPayload = {
   id: string;
   data: Partial<Project>;
 };
-
+import { useProjectMutations } from '@/hooks/useProject';
 const ProjectsPage = () => {
   const [createOpen, setCreateOpen] = useState(false);
   const [editProject, setEditProject] = useState<Project | null>(null);
   const [assignProjectState, setAssignProjectState] = useState<Project | null>(null);
 
-  const { data: projectsData = [], isLoading: projectsLoading, error: projectsError } = useQuery({
+  const { data: projectsData = [], isLoading: projectsLoading,  } = useQuery({
     queryKey: ['projects'], 
     queryFn: getProjects
   });
 
 
-  console.log(projectsData)
-  const { data: usersData = [], isLoading: usersLoading } = useQuery({
+  const { data: usersData = [],  } = useQuery({
     queryKey: ['users'], 
     queryFn: getUsers
   });
@@ -42,77 +36,20 @@ const ProjectsPage = () => {
   const { user } = useUserStore();
   const isAdmin = user?.role === 'ADMIN';
   const navigate = useNavigate();
+  const { 
+    createMutation, 
+    updateMutation, 
+    deleteMutation, 
+    assignMutation, 
+    unassignMutation 
+  } = useProjectMutations();
 
-  const createMutation = useMutation({
-    mutationFn: createProject, 
-    onSuccess: () => {
-      console.log('success!');
-      queryClient.invalidateQueries({ queryKey: ['projects'] });
-    }
-  });
-
-  const assignMutation = useMutation({
-    mutationFn: ({ projectId, userIds }: { projectId: string; userIds: string[] }) =>
-      assignProjectAPI(projectId, userIds),
-    onSuccess: () => {
-      console.log('✅ assign success!');
-      queryClient.invalidateQueries({ queryKey: ['projects'] });
-    },
-  });
-  
-  
-
-  const unassignMutation = useMutation({
-    mutationFn: ({ projectId, userId }: { projectId: string; userId: string }) => 
-      unassignProjectAPI({ id: projectId, userId }),
-    onSuccess: () => {
-      console.log("unassign success!");
-      queryClient.invalidateQueries({ queryKey: ["projects"] });
-    },
-  });
-
-  const updateMutation = useMutation({
-    mutationFn: async ({ id, data }: UpdateProjectPayload) => {
-      return updateProject(id, data);
-    },
-    onSuccess: () => {
-      console.log('update success!');
-      queryClient.invalidateQueries({ queryKey: ['projects'] });
-    },
-  });
-
-  const deleteMutation = useMutation({
-    mutationFn: deleteProject, 
-    onSuccess: () => {
-      console.log('delete success!');
-      queryClient.invalidateQueries({ queryKey: ['projects'] });
-    }
-  });
-
-  const handleCreate = (data: any) => {
-    createMutation.mutate(data);
-  };
-
-  const handleUpdate = (payload: UpdateProjectPayload) => {
-    updateMutation.mutate(payload);
-  };
-
-  const handleDelete = (id: string) => {
-    deleteMutation.mutate(id);
-  };
-
-  const handleAssignClick = (project: Project) => {
-    setAssignProjectState(project);
-  };
-
-  const handleAssignSubmit = (projectId: string, userIds: string[]) => {
-    assignMutation.mutate({ projectId, userIds });
-  };
-  
-  const handleUnassign = (projectId: string, userId: string) => {
-    unassignMutation.mutate({ projectId, userId });
-  };
-
+  const handleCreate = (data: any) => createMutation.mutate(data);
+  const handleUpdate = (payload: UpdateProjectPayload) => updateMutation.mutate(payload);
+  const handleDelete = (id: string) => deleteMutation.mutate(id);
+  const handleAssignSubmit = (projectId: string, userIds: string[]) => assignMutation.mutate({ projectId, userIds });
+  const handleUnassign = (projectId: string, userId: string) => unassignMutation.mutate({ projectId, userId });
+  const handleAssignClick = (project: Project) => { setAssignProjectState(project); };
   return (
     <div className="min-h-screen min-w-screen bg-gray-50 dark:bg-gray-900">
       <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">

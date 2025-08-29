@@ -95,24 +95,9 @@ h1 {
 
 button {
   border-radius: var(--radius);
-  border: 1px solid oklch(0.45 0.09 250 / 20%);
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: var(--primary);
-  color: white;
+
   cursor: pointer;
   transition: all 0.2s ease;
-}
-button:hover {
-  background-color: oklch(0.38 0.09 250);
-  border-color: oklch(0.38 0.09 250);
-}
-button:focus,
-button:focus-visible {
-  outline: 2px solid oklch(0.45 0.09 250 / 50%);
-  outline-offset: 2px;
 }
 
 @media (prefers-color-scheme: light) {
@@ -216,6 +201,25 @@ button:focus-visible {
   --sidebar-border: oklch(0.16 0.008 260);
   --sidebar-ring: oklch(0.68 0.12 250);
 }
+
+.theme-gray {
+  --primary: oklch(0.3 0.05 90); /* Warm Gray */
+  --ring: oklch(0.3 0.05 90);
+}
+
+/* Firefox autofill */
+input:-moz-autofill {
+  box-shadow: 0 0 0 1000px #cce4ff inset !important; /* light blue bg */
+  -moz-text-fill-color: #000 !important;            /* black text */
+}
+
+/* Chrome/Chromium/Edge autofill */
+input:-webkit-autofill {
+  box-shadow: 0 0 0 1000px #cce4ff inset !important; /* light blue bg */
+  -webkit-text-fill-color: #000 !important;          /* black text */
+  transition: background-color 5000s ease-in-out 0s !important;
+}
+
 
 @layer base {
   * {

@@ -4,7 +4,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { AppRoutes } from "./pages/routes"
 import { Toaster } from "sonner";
 
-import { queryClient } from "./lib/react-query";
+import { queryClient } from "./lib/queryClient";
 
 function App() {
   return (

@@ -1,5 +1,5 @@
 import { apiClient } from "../apiClient";
-import type { User, CreateUserPayload } from "../../types/project";
+import type { User, CreateUserPayload } from "../../types";
 
 
   export const  getUsers = async(): Promise<User[]> => {

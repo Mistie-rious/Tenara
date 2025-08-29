@@ -3,6 +3,7 @@ import { Injectable, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from "./dto/create-user.dto"
 import { NotFoundException } from '@nestjs/common';
+import * as bcrypt from 'bcrypt'
 @Injectable()
 export class UsersService {
   constructor(private prisma: PrismaService) {}
@@ -94,11 +95,13 @@ async unassignProjectFromUser(userId: string, projectId: string, tenantId: strin
       throw new ForbiddenException('Only admins can create users');
     }
 
+    const hashedPassword = await bcrypt.hash(dto.password, 10);
+
     return this.prisma.user.create({
       data: {
         email: dto.email,
         username: dto.username,
-        password: dto.password,
+        password: hashedPassword,
         role: dto.role || 'MEMBER',
         tenantId,
       },

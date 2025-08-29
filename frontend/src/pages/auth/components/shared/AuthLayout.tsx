@@ -1,7 +1,5 @@
 import type { ReactNode } from "react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
-import { Building2 } from "lucide-react";
-
 interface AuthLayoutProps {
   title: string;
   subtitle: string;

@@ -31,7 +31,7 @@ model User {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
-   assignedProjects Project[] @relation("UserProjects")
+  assignedProjects Project[] @relation("UserProjects")
 }
 
 model Project {

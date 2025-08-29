@@ -5,8 +5,7 @@ import { Button } from "../../../../components/ui/button";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 
 import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
-import { useLogin } from "@/lib/api/hooks/useLogin";
+import { useAuth } from "@/hooks/useAuth";
 interface LoginFormData {
   email: string;
   password: string;
@@ -15,12 +14,14 @@ interface LoginFormData {
 const LoginForm: React.FC = () => {
     const [formData, setFormData] = useState<LoginFormData>({ email: "", password: "" });
     const [showPassword, setShowPassword] = useState(false);
-    const [error, setError] = useState("");
+    const [error] = useState("");
   
-    const loginMutation = useLogin();
+    const { loginMutation } = useAuth();
+
     const navigate = useNavigate();
   
-   
+    const toggleShowPassword = () => setShowPassword((prev) => !prev);
+
   
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const { id, value } = e.target;
@@ -28,24 +29,10 @@ const LoginForm: React.FC = () => {
     };
   
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-        console.log(formData)
       e.preventDefault();
-      setError("");
-      loginMutation.mutate(
-        formData,
-        {
-          onSuccess: () => {
-            
-            toast.success("Login successful!")
-            navigate("/dashboard");
-          },
-          onError: (err: any) => {
-            // Handle errors
-            alert(err.response?.data?.message || "Login failed");
-          },
-        }
-      );
+      loginMutation.mutate(formData);
     };
+  
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">
@@ -65,6 +52,7 @@ const LoginForm: React.FC = () => {
         <Label htmlFor="password">Password</Label>
         <div className="relative">
           <Input
+          
             id="password"
             name="password"
             type={showPassword ? "text" : "password"}
@@ -73,28 +61,28 @@ const LoginForm: React.FC = () => {
             onChange={handleChange}
             required
           />
-          <Button
+          <button
             type="button"
-            size="sm"
+       
             className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-            // onClick={toggleShowPassword}
+            onClick={toggleShowPassword}
           >
-            {/* {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />} */}
-          </Button>
+            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+          </button>
         </div>
       </div>
 
       <div className="flex flex-col space-y-2">
-        <Button type="submit" disabled={loginMutation.isPending}>
+        <Button   type="submit" disabled={loginMutation.isPending}>
           {loginMutation.isPending ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Signing In...</> : "Sign In"}
         </Button>
         <div className='flex text-sm justify-center space-x-2' >
         <span  >
           Don't have an account 
         </span>
-        <span className='text-primary' onClick={() => navigate('/register')} >
+        <button className='text-primary' onClick={() => navigate('/register')} >
         Sign up
-        </span>
+        </button>
         </div>
       </div>
 

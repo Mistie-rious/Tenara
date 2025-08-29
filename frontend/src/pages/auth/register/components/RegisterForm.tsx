@@ -1,14 +1,11 @@
 import React, { useState } from 'react';
-import type { ChangeEvent, FormEvent } from 'react';
 import { Input } from '../../../../components/ui/input';
 import { Label } from '../../../../components/ui/label';
 import { Button } from '../../../../components/ui/button';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
-import { useMutation } from '@tanstack/react-query';
-import { createTenant } from '../../../../lib/api/services/auth';
 import { useNavigate } from 'react-router-dom';
-import { toast } from 'sonner';
 
+import { useAuth } from '@/hooks/useAuth';
 
 interface RegisterFormData {
   name: string;
@@ -27,47 +24,24 @@ const RegisterForm: React.FC = () => {
     confirmPassword: '',
   });
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState('');
-
+  const [error] = useState('');
+  const { registerMutation } = useAuth();
+  
 
   const navigate = useNavigate();
 
-  const mutation = useMutation({
-    mutationFn: createTenant,
-    onSuccess: async (data) => {
-      console.log('sucess')
-      toast.success('User succesfully created!')
-      navigate('/login')
-    },
-    onError: (err: any) => {
-      setError(err.response?.data?.message || 'Something went wrong');
-    },
-  });
-
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { id, value } = e.target;
-    setFormData((prev) => ({ ...prev, [id]: value }));
-  };
-
   const toggleShowPassword = () => setShowPassword((prev) => !prev);
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setError('');
-
-    if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
-      return;
-    }
-
-    mutation.mutate({
-      name: formData.name,
-      username: formData.username,
-      email: formData.email,
-      password: formData.password,
-    });
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target;
+    setFormData(prev => ({ ...prev, [id]: value }));
   };
 
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (formData.password !== formData.confirmPassword) return;
+    registerMutation.mutate({ name: formData.name, username: formData.username, email: formData.email, password: formData.password });
+  };
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">
@@ -96,9 +70,9 @@ const RegisterForm: React.FC = () => {
             required
             minLength={6}
           />
-          <Button type="button" size="sm"  className="absolute right-0 top-0 h-full px-3 py-2" onClick={toggleShowPassword}>
+          <button type="button"   className="absolute right-0 top-0 h-full px-3 py-2" onClick={toggleShowPassword}>
             {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-          </Button>
+          </button>
         </div>
       </div>
 
@@ -115,16 +89,16 @@ const RegisterForm: React.FC = () => {
       </div>
 
       <div className="flex flex-col space-y-2">
-        <Button type="submit" disabled={mutation.isPending}>
-          {mutation.isPending ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Creating...</> : 'Create Tenant'}
+        <Button type="submit" disabled={registerMutation.isPending}>
+          {registerMutation.isPending ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Creating...</> : 'Create Tenant'}
         </Button>
         <div className='flex text-sm justify-center space-x-2' >
         <span  >
           Already have an account? 
         </span>
-        <span className='text-primary' onClick={() => navigate('/login')} >
+        <button className='text-primary' onClick={() => navigate('/login')} >
         Log in
-        </span>
+        </button>
         </div>
       </div>
 

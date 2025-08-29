@@ -3,30 +3,24 @@ import { Button } from '../../components/ui/button';
 import UserProfileCard from './components/ProfileCard';
 import CreateUserDialog from './components/CreateUserDialog';
 import { Plus, Users, Shield } from 'lucide-react';
-import type { User } from '../../lib/types/project';
 import { getUsers } from '@/lib/api/services/users';
 import { useQuery } from '@tanstack/react-query';
-import { useMutation } from '@tanstack/react-query';
 import { useUserStore } from '@/store/userStore';
-import { createUser } from '@/lib/api/services/users';
-import { queryClient } from '@/lib/react-query';
 import { ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-
+import { useUserMutations } from '@/hooks/useUser';
 
 const UsersPage = () => {
   const [createUserOpen, setCreateUserOpen] = useState(false);
   const [creating, setCreating] = useState(false);
 
   const {user} = useUserStore();
-  const {data : usersData = [], isLoading: usersLoading, error: usersError} = useQuery({queryKey: ['users'], queryFn: getUsers})
+  const {data : usersData = []} = useQuery({queryKey: ['users'], queryFn: getUsers})
   const navigate = useNavigate();
+  const { createMutation } = useUserMutations();
+ 
 
-  const createMutation = useMutation({mutationFn: createUser, 
-    onSuccess: () => {
-      console.log('sucess!')
-      queryClient.invalidateQueries({queryKey: ['users']})
-  }})
+
 
   const isAdmin = user?.role === 'ADMIN';
 

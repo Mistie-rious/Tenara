@@ -4,9 +4,9 @@ import { Card, CardHeader, CardContent, CardFooter, CardTitle } from '../../../c
 import { Badge } from '../../../components/ui/badge';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '../../../components/ui/dropdown-menu';
 import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from '../../../components/ui/alert-dialog';
-import { MoreHorizontal, Edit, Trash2, Calendar, Users, UserX } from 'lucide-react';
+import { MoreHorizontal, Edit, Trash2, Calendar, Users } from 'lucide-react';
 import { Button } from '../../../components/ui/button';
-import type { Project } from '../../../lib/types/project';
+import type { Project } from '../../../lib/types';
 
 interface Props {
   project: Project;

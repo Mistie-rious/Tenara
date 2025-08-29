@@ -73,13 +73,13 @@ export class ProjectsService {
         include: { assignedUsers: true },
       });
     } catch (error) {
-      console.error("❌ Error assigning user to project", {
+      console.error("Error assigning user to project", {
         projectId,
         userIds,
         tenantId,
         error,
       });
-      throw error; // rethrow so higher layers (service/controller) can handle it
+      throw error;
     }
   }
   
@@ -95,7 +95,7 @@ export class ProjectsService {
         include: { assignedUsers: true },
       });
     } catch (error) {
-      console.error("❌ Error unassigning user from project", {
+      console.error("Error unassigning user from project", {
         projectId,
         userId,
         tenantId,

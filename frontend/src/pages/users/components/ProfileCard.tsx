@@ -7,14 +7,8 @@ import { Badge } from "../../../components/ui/badge";
 import { Mail } from "lucide-react";
 import { Calendar } from "lucide-react";
 import { Activity } from "lucide-react";
-import type { User } from "../../../lib/types/project";
+import type { User } from "../../../lib/types";
 
-const parseDate = (dateStr?: string) => {
-  if (!dateStr) return null;
-  const trimmed = dateStr.trim();
-  const date = new Date(trimmed);
-  return isNaN(date.getTime()) ? null : date;
-};
 
 
 const UserProfileCard = ({ user }: { user: User }) => (
