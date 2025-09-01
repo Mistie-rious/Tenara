@@ -3,16 +3,20 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateProjectDto } from './dto/create-project-dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { InternalServerErrorException } from '@nestjs/common';
+import { TenantService } from 'src/common/guards/tenant-context.service';
+
+
 @Injectable()
 export class ProjectsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService, private tenantService: TenantService) {}
 
-  async findAll(tenantId: string) {
+  async findAll() {
     try {
+      const tenantId = this.tenantService.getTenantId();
       const projects = await this.prisma.project.findMany({
         where: { tenantId, deletedAt: null },
         include: {
-          assignedUsers: {   // whatever your relation field is in the Prisma schema
+          assignedUsers: {   
             select: {
               id: true,
               username: true,
@@ -30,7 +34,8 @@ export class ProjectsService {
     }
   }
   
-  async findOne(projectId: string, tenantId: string) {
+  async findOne(projectId: string) {
+    const tenantId = this.tenantService.getTenantId();
     const project = await this.prisma.project.findFirst({
       where: { id: projectId, tenantId, deletedAt: null },
     });
@@ -38,7 +43,8 @@ export class ProjectsService {
     return project;
   }
 
-  async create(dto: CreateProjectDto, tenantId: string, userId: string) {
+  async create(dto: CreateProjectDto, userId: string) {
+    const tenantId = this.tenantService.getTenantId();
     return this.prisma.project.create({
       data: {
         name: dto.name,
@@ -50,7 +56,8 @@ export class ProjectsService {
     });
   }
 
-  async update(id: string, tenantId: string, userId: string, dto: UpdateProjectDto) {
+  async update(id: string, userId: string, dto: UpdateProjectDto) {
+    const tenantId = this.tenantService.getTenantId();
     return this.prisma.project.updateMany({
       where: { id, tenantId }, 
       data: {
@@ -61,8 +68,10 @@ export class ProjectsService {
   }
 
  
-  async assignUserToProject(projectId: string, userIds: string[], tenantId: string) {
+  async assignUserToProject(projectId: string, userIds: string[]) {
+    const tenantId = this.tenantService.getTenantId();
     try {
+      
       return await this.prisma.project.update({
         where: { id: projectId, tenantId },
         data: {
@@ -76,15 +85,17 @@ export class ProjectsService {
       console.error("Error assigning user to project", {
         projectId,
         userIds,
-        tenantId,
+      
         error,
       });
       throw error;
     }
   }
   
-  async unassignUserFromProject(projectId: string, userId: string, tenantId: string) {
+  async unassignUserFromProject(projectId: string, userId: string) {
+    const tenantId = this.tenantService.getTenantId();
     try {
+     
       return await this.prisma.project.update({
         where: { id: projectId, tenantId },
         data: {
@@ -98,7 +109,7 @@ export class ProjectsService {
       console.error("Error unassigning user from project", {
         projectId,
         userId,
-        tenantId,
+   
         error,
       });
       throw error;
@@ -108,7 +119,7 @@ export class ProjectsService {
 
   
 
-  async delete(projectId: string, tenantId: string, userRole: string) {
+  async delete(projectId: string,  userRole: string) {
     if (userRole !== 'ADMIN') {
       throw new ForbiddenException('Only admins can delete projects');
     }

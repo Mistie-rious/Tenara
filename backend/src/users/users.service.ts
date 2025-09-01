@@ -1,14 +1,17 @@
-// src/users/users.service.ts
 import { Injectable, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from "./dto/create-user.dto"
 import { NotFoundException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt'
+import { TenantService } from 'src/common/guards/tenant-context.service';
+
+
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService, private tenantService: TenantService) {}
 
-  async findAll(tenantId: string) {
+  async findAll() {
+    const tenantId = this.tenantService.getTenantId();
     return this.prisma.user.findMany({
       where: { tenantId },
       select: {
@@ -23,7 +26,8 @@ export class UsersService {
     });
   }
 
-  async findOne(userId: string, tenantId: string) {
+  async findOne(userId: string) {
+    const tenantId = this.tenantService.getTenantId();
     return this.prisma.user.findFirst({
       where: { id: userId, tenantId },
       select: {
@@ -39,9 +43,10 @@ export class UsersService {
   }
 
   async getUserById(userId: string) {
+    const tenantId = this.tenantService.getTenantId();
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
-      include: { tenant: true }, // include tenant info
+      include: { tenant: true },
     });
 
     if (!user) {
@@ -64,7 +69,8 @@ export class UsersService {
     };
   }
 
-async assignProjectToUser(userId: string, projectId: string, tenantId: string) {
+async assignProjectToUser(userId: string, projectId: string) {
+  const tenantId = this.tenantService.getTenantId();
   return this.prisma.user.update({
     where: { id: userId, tenantId },
     data: {
@@ -76,7 +82,8 @@ async assignProjectToUser(userId: string, projectId: string, tenantId: string) {
   });
 }
 
-async unassignProjectFromUser(userId: string, projectId: string, tenantId: string) {
+async unassignProjectFromUser(userId: string, projectId: string) {
+  const tenantId = this.tenantService.getTenantId();
   return this.prisma.user.update({
     where: { id: userId, tenantId },
     data: {
@@ -90,7 +97,8 @@ async unassignProjectFromUser(userId: string, projectId: string, tenantId: strin
 
 
 
-  async create(dto: CreateUserDto, tenantId: string, currentUserRole: string) {
+  async create(dto: CreateUserDto, currentUserRole: string) {
+    const tenantId = this.tenantService.getTenantId();
     if (currentUserRole !== 'ADMIN') {
       throw new ForbiddenException('Only admins can create users');
     }

@@ -19,7 +19,7 @@ import { LogoutButton } from './components/Logout';
 import { UserCard } from './components/UserCard';
 import { Badge } from '@/components/ui/badge';
 import { Shield } from 'lucide-react';
-import { useAuthStore } from '@/store/authStore';
+
 const DashboardPage = () => {
   
   const {user} = useUserStore()

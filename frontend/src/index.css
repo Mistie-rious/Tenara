@@ -1,7 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-@custom-variant dark (&:is(.dark *));
 
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
@@ -95,7 +94,6 @@ h1 {
 
 button {
   border-radius: var(--radius);
-
   cursor: pointer;
   transition: all 0.2s ease;
 }

@@ -18,8 +18,8 @@ export class UsersController {
 
   @Get('findAll')
   @FindAllUsersSwagger()
-  findAll(@Tenant() tenantId: string) {
-    return this.usersService.findAll(tenantId);
+  findAll() {
+    return this.usersService.findAll();
   }
 
   @Get('me')
@@ -32,8 +32,8 @@ getProfile(@GetUser() user: any) {
   @Post('create')
   @Roles(Role.ADMIN)
   @CreateUserSwagger()
-  create(@Body() dto: CreateUserDto, @GetUser() user:any, @Tenant() tenantId: string) {
-    return this.usersService.create(dto, tenantId, user.role);
+  create(@Body() dto: CreateUserDto, @GetUser() user:any, ) {
+    return this.usersService.create(dto,  user.role);
   }
 
   @Post(':id/assign-project')
@@ -42,9 +42,9 @@ getProfile(@GetUser() user: any) {
     @Param('id') userId: string,
     @Body('projectId') projectId: string,
     @GetUser() user: any,
-    @Tenant() tenantId: string
+  
   ) {
-    return this.usersService.assignProjectToUser(userId, projectId, tenantId);
+    return this.usersService.assignProjectToUser(userId, projectId);
   }
 
  
@@ -54,8 +54,8 @@ getProfile(@GetUser() user: any) {
     @Param('id') userId: string,
     @Param('projectId') projectId: string,
     @GetUser() user: any,
-    @Tenant() tenantId: string
+   
   ) {
-    return this.usersService.unassignProjectFromUser(userId, projectId, tenantId);
+    return this.usersService.unassignProjectFromUser(userId, projectId);
   }
 }

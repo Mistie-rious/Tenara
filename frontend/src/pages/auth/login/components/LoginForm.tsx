@@ -80,7 +80,7 @@ const LoginForm: React.FC = () => {
         <span  >
           Don't have an account 
         </span>
-        <button className='text-primary' onClick={() => navigate('/register')} >
+        <button className=' p-1 text-primary' onClick={() => navigate('/register')} >
         Sign up
         </button>
         </div>

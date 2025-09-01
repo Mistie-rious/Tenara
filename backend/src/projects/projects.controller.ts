@@ -9,6 +9,7 @@ import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { GetUser } from 'src/common/decorators/get-user.decorator';
 import { Tenant } from 'src/common/decorators/get-tenant.decorator';
+
 @ApiTags('projects')
 @ApiBearerAuth('access-token') 
 @UseGuards(JwtAuthGuard)
@@ -19,7 +20,7 @@ export class ProjectsController {
   @Get()
   @FindAllProjectsSwagger()
   findAll(@Tenant() tenantId: string ) {
-    return this.projectsService.findAll(tenantId);
+    return this.projectsService.findAll();
   }
   
   
@@ -27,13 +28,13 @@ export class ProjectsController {
   @Get(':id')
 
   findOne(@Param('id') id: string, @Tenant() tenantId: string) {
-    return this.projectsService.findOne(id, tenantId);
+    return this.projectsService.findOne(id);
   }
 
   @Post()
   @CreateProjectSwagger()
   create(@Body() dto: CreateProjectDto, @GetUser() user: any, @Tenant() tenantId: string) {
-    return this.projectsService.create(dto, tenantId, user.id);
+    return this.projectsService.create(dto, user.id);
   }
 
   @Patch(':id')
@@ -44,14 +45,14 @@ update(
   @GetUser() user: any,
   @Tenant() tenantId: string
 ) {
-  return this.projectsService.update(id, tenantId, user.id, dto);
+  return this.projectsService.update(id,  user.id, dto);
 }
 
   @Delete(':id')
   @Roles(Role.ADMIN)
   @DeleteProjectSwagger()
   delete(@Param('id') id: string, @GetUser() user: any, @Tenant() tenantId: string) {
-    return this.projectsService.delete(id, tenantId, user.role);
+    return this.projectsService.delete(id,  user.role);
   }
 
 
@@ -63,7 +64,7 @@ update(
     @GetUser() user: any,
     @Tenant() tenantId: string
   ) {
-    return this.projectsService.assignUserToProject(projectId, userIds, tenantId);
+    return this.projectsService.assignUserToProject(projectId, userIds);
   }
   
    
@@ -75,6 +76,6 @@ update(
       @GetUser() user: any,
       @Tenant() tenantId: string
     ) {
-      return this.projectsService.unassignUserFromProject(projectId, userId, tenantId);
+      return this.projectsService.unassignUserFromProject(projectId, userId);
     }
 }

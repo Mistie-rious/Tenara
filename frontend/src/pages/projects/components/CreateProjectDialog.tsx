@@ -66,7 +66,7 @@ export const CreateProjectDialog = ({ open, onOpenChange, onSubmit }: Props) => 
           />
   
           <Label>Status</Label>
-          <Select value={status} onValueChange={(val) => setStatus(val)}>
+          <Select   value={status} onValueChange={(val) => setStatus(val)}>
             <SelectTrigger><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="INACTIVE">Inactive</SelectItem>

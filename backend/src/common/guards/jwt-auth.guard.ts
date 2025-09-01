@@ -12,7 +12,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       throw err || new BadRequestException('Authentication failed');
     }
 
-    // Check for tenantId in the JWT payload
+    
     if (!user.tenantId) {
       throw new BadRequestException('Tenant ID missing from token');
     }
